@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<!--
+This is an app that demonstrates how to control an Arduio board
+with TCP over WiFi from the mobile device and a WiFi shield or
+an Ethernet shield.
+
+Please note that you must enter the IP-address of the Arduino
+for this example to work.
+-->
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, shrink-to-fit=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+
+	<title>Auto Water Filler</title>
+
+	<style>
+		@import 'ui/css/evothings-app.css';
+	</style>
+
+	<script>
+	// Redirect console.log to Evothings Workbench.
+	if (window.hyper && window.hyper.log) { console.log = hyper.log }
+	</script>
+
+	<script src="cordova.js"></script>
+	<script src="libs/jquery/jquery.js"></script>
+	<script src="libs/evothings/evothings.js"></script>
+	<script src="libs/evothings/ui/ui.js"></script>
+	<script src="libs/evothings/arduinotcp/arduinotcp.js"></script>
+</head>
+
+<body ontouchstart="">
+	<h1>Auto Water Filler</h1>
+
+	<p>Enter IP-address of the Arduino</p>
+
+	<input id="ArduinoIpAddress" value="192.168.5.100" type="url" />
+	<br/>
+	<button class="green" onclick="app.connect()">CONNECT</button>
+	<button class="charcoal" onclick="app.disconnect()">DISCONNECT</button>
+	
+	<h2>Status: <span id="ArduinoStatus">Not connected</span></h2>
+
+	<hr/>
+
+	<table style="font-size: inherit;">
+		<tr>
+			<td><h2>Status Air</h2></td>
+			<td style="text-align: right"><button class="yellow" onclick="app.refreshAir()">REFRESH</button></td>
+		</tr>
+	</table>
+	
+
+	<div style="overflow-x: hidden; width: inherit; height: 200px !important;">
+		<progress value="0" max="100" id="progressbar"></progress>
+	</div>
+
+	<hr/>
+	
+	<h2>Pompa : 
+			<span style="color:red" id="labelMati" hidden>MATI</span>
+			<span style="color:green" id="labelNyala" hidden>NYALA</span>
+			<span style="color:gray" id="labelTanya">?</span>
+		</h2>
+	
+
+	<center>
+		<button class="green" onclick="app.pumpOn()">PUMP ON</button>
+		<button class="red" onclick="app.pumpOff()">PUMP OFF</button>
+	</center>
+	
+	
+
+	<script>
+	// Short name for Arduino TCP library.
+	var arduino = evothings.arduinotcp
+
+	// Application object.
+	var app = {}
+
+	// Turn on LED.
+	app.pumpOn = function()
+	{
+		arduino.kirim('N');
+	}
+
+	// Turn off LED.
+	app.pumpOff = function()
+	{
+		arduino.kirim('M');
+	}
+
+	app.refreshAir = function()
+	{
+		arduino.kirimSpesial('A');
+	}
+
+	app.connect = function()
+	{
+		arduino.connect($('#ArduinoIpAddress').val(), 4000, function(success)
+		{
+			if (success)
+			{
+				$('#ArduinoStatus').html('Connected to the Arduino');
+				arduino.kirimSpesial('A');
+			}
+			else
+			{
+				$('#ArduinoStatus').html('Connection error')
+			}
+		})
+	}
+
+	app.disconnect = function()
+	{
+		arduino.disconnect()
+		$('#ArduinoStatus').html('Disconnected')
+	}
+	</script>
+
+</body>
+
+</html>

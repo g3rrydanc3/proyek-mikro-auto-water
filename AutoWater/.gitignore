@@ -1,0 +1,27 @@
+# Mac
+.DS_Store
+
+# Node
+npm-debug.log
+/node_modules
+
+# Cordova
+/platforms
+/plugins
+
+# res
+resources/signing
+
+# IntelliJ IDEA files
+*.iml
+.idea
+
+#windows
+Thumbs.db
+Desktop.ini
+
+*.sw[mnpcod]
+*.log
+*.tmp
+*.tmp.*
+log.txt
