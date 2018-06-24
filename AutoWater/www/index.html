@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html>
-<!--
-This is an app that demonstrates how to control an Arduio board
-with TCP over WiFi from the mobile device and a WiFi shield or
-an Ethernet shield.
-
-Please note that you must enter the IP-address of the Arduino
-for this example to work.
--->
 <head>
-
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, shrink-to-fit=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
 
@@ -32,94 +23,79 @@ for this example to work.
 </head>
 
 <body ontouchstart="">
-	<h1>Auto Water Filler</h1>
+<h1>Auto Water Filler</h1>
 
-	<p>Enter IP-address of the Arduino</p>
+<p>Enter IP-address of the Arduino</p>
 
-	<input id="ArduinoIpAddress" value="192.168.5.100" type="url" />
-	<br/>
-	<button class="green" onclick="app.connect()">CONNECT</button>
-	<button class="charcoal" onclick="app.disconnect()">DISCONNECT</button>
-	
-	<h2>Status: <span id="ArduinoStatus">Not connected</span></h2>
+<input id="ArduinoIpAddress" value="192.168.5.100" type="url" />
+<br/>
+<button class="green" onclick="app.connect()">CONNECT</button>
+<button class="charcoal" onclick="app.disconnect()">DISCONNECT</button>
 
-	<hr/>
+<h2>Status: <span id="ArduinoStatus">Not connected</span></h2>
 
-	<table style="font-size: inherit;">
-		<tr>
-			<td><h2>Status Air</h2></td>
-			<td style="text-align: right"><button class="yellow" onclick="app.refreshAir()">REFRESH</button></td>
-		</tr>
-	</table>
-	
+<hr/>
 
-	<div style="overflow-x: hidden; width: inherit; height: 200px !important;">
-		<progress value="0" max="100" id="progressbar"></progress>
-	</div>
+<table style="font-size: inherit;">
+	<tr>
+		<td><h2>Status Air</h2></td>
+		<td style="text-align: right"><button class="yellow" onclick="app.refreshAir()">REFRESH</button></td>
+	</tr>
+</table>
 
-	<hr/>
-	
-	<h2>Pompa : 
-			<span style="color:red" id="labelMati" hidden>MATI</span>
-			<span style="color:green" id="labelNyala" hidden>NYALA</span>
-			<span style="color:gray" id="labelTanya">?</span>
-		</h2>
-	
 
-	<center>
-		<button class="green" onclick="app.pumpOn()">PUMP ON</button>
-		<button class="red" onclick="app.pumpOff()">PUMP OFF</button>
-	</center>
-	
-	
+<div style="overflow-x: hidden; width: inherit; height: 200px !important;">
+	<progress value="0" max="100" id="progressbar"></progress>
+</div>
 
-	<script>
-	// Short name for Arduino TCP library.
-	var arduino = evothings.arduinotcp
+<hr/>
 
-	// Application object.
-	var app = {}
+<h2>Pompa : 
+	<span style="color:red" id="labelMati" hidden>MATI</span>
+	<span style="color:green" id="labelNyala" hidden>NYALA</span>
+	<span style="color:gray" id="labelTanya">?</span>
+</h2>
 
-	// Turn on LED.
-	app.pumpOn = function()
+<center>
+	<button class="green" onclick="app.pumpOn()">PUMP ON</button>
+	<button class="red" onclick="app.pumpOff()">PUMP OFF</button>
+</center>
+
+<script>
+var arduino = evothings.arduinotcp
+var app = {}
+
+app.pumpOn = function(){ //fungsi pompa menyala
+	arduino.kirim('N');
+}
+app.pumpOff = function(){ //fungsi pompa mati
+	arduino.kirim('M');
+}
+
+app.refreshAir = function(){ //fungsi refresh
+	arduino.kirimSpesial('A');
+}
+
+app.connect = function(){ //fungsi connect
+					//	ipaddress dari user		, timeout, function callback
+	arduino.connect($('#ArduinoIpAddress').val(), 4000, function(success)
 	{
-		arduino.kirim('N');
-	}
-
-	// Turn off LED.
-	app.pumpOff = function()
-	{
-		arduino.kirim('M');
-	}
-
-	app.refreshAir = function()
-	{
-		arduino.kirimSpesial('A');
-	}
-
-	app.connect = function()
-	{
-		arduino.connect($('#ArduinoIpAddress').val(), 4000, function(success)
+		if (success)
 		{
-			if (success)
-			{
-				$('#ArduinoStatus').html('Connected to the Arduino');
-				arduino.kirimSpesial('A');
-			}
-			else
-			{
-				$('#ArduinoStatus').html('Connection error')
-			}
-		})
-	}
+			$('#ArduinoStatus').html('Connected to the Arduino');
+			arduino.kirimSpesial('A');
+		}
+		else
+		{
+			$('#ArduinoStatus').html('Connection error')
+		}
+	})
+}
 
-	app.disconnect = function()
-	{
-		arduino.disconnect()
-		$('#ArduinoStatus').html('Disconnected')
-	}
-	</script>
-
+app.disconnect = function(){ // fungsi disconnect
+	arduino.disconnect()
+	$('#ArduinoStatus').html('Disconnected')
+}
+</script>
 </body>
-
 </html>
